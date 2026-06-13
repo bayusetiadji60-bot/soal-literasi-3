@@ -691,11 +691,11 @@ function buildNavGrid(){
     grid.appendChild(dot);
   });
 }
-function refreshNavGrid(){
+function refreshNavGrid(scrollTo){
   document.querySelectorAll('.nav-dot').forEach((dot, idx) => {
     dot.classList.toggle('current', idx === currentIndex);
     dot.classList.toggle('answered', isAnswered(idx));
-    if(idx === currentIndex) dot.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    if(scrollTo && idx === currentIndex) dot.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
   });
   const answeredCount = questions.filter((q,i)=>isAnswered(i)).length;
   document.getElementById('progress-fill').style.width = (answeredCount/questions.length*100)+'%';
@@ -713,10 +713,13 @@ function isAnswered(idx){
 /* =====================================================
    RENDER QUESTION
    ===================================================== */
-function renderQuestion(idx){
+function renderQuestion(idx, skipScroll){
+  const isNewQuestion = (idx !== currentIndex) || !skipScroll;
   currentIndex = idx;
   const q = questions[idx];
   const wrap = document.getElementById('question-wrap');
+  const oldReading = wrap.querySelector('.reading-text');
+  const savedScroll = (skipScroll && oldReading) ? oldReading.scrollTop : 0;
   wrap.innerHTML = '';
 
   // meta tags
@@ -734,6 +737,7 @@ function renderQuestion(idx){
   rtDiv.className = 'reading-text';
   rtDiv.innerHTML = `<div class="rt-title">${rt.title}</div>${escapeHtml(rt.body)}<div class="rt-source">${rt.source}</div>`;
   wrap.appendChild(rtDiv);
+  rtDiv.scrollTop = savedScroll;
 
   // question card
   const card = document.createElement('div');
@@ -753,9 +757,9 @@ function renderQuestion(idx){
   }
 
   wrap.appendChild(card);
-  refreshNavGrid();
+  refreshNavGrid(true);
   updateNavButtons();
-  window.scrollTo({top:0, behavior:'smooth'});
+  if(isNewQuestion) window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function escapeHtml(str){
@@ -776,7 +780,9 @@ function renderPG(card, q){
     div.innerHTML = `<div class="opt-letter">${opt.l}</div><div>${escapeHtml(opt.t)}</div>`;
     div.addEventListener('click', () => {
       answers[q.no].selected = opt.l;
-      renderQuestion(currentIndex);
+      optWrap.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+      div.classList.add('selected');
+      refreshNavGrid();
     });
     optWrap.appendChild(div);
   });
@@ -793,21 +799,28 @@ function renderJamak(card, q){
 
   const optWrap = document.createElement('div');
   optWrap.className = 'options';
+  const els = {};
   q.options.forEach(opt => {
     const div = document.createElement('div');
     div.className = 'option checkbox';
     if(answers[q.no].selected.includes(opt.l)) div.classList.add('selected');
     div.innerHTML = `<div class="opt-letter">${opt.l}</div><div>${escapeHtml(opt.t)}</div>`;
+    els[opt.l] = div;
     div.addEventListener('click', () => {
       const sel = answers[q.no].selected;
       const i = sel.indexOf(opt.l);
       if(i > -1){
         sel.splice(i,1);
+        div.classList.remove('selected');
       } else {
-        if(sel.length >= 2) sel.shift(); // remove oldest, keep max 2
+        if(sel.length >= 2){
+          const removed = sel.shift();
+          els[removed].classList.remove('selected');
+        }
         sel.push(opt.l);
+        div.classList.add('selected');
       }
-      renderQuestion(currentIndex);
+      refreshNavGrid();
     });
     optWrap.appendChild(div);
   });
@@ -845,7 +858,16 @@ function renderKategori(card, q){
       el.addEventListener('click', () => {
         const ci = el.dataset.ci, si = el.dataset.si;
         answers[q.no].selected[ci] = parseInt(si);
-        renderQuestion(currentIndex);
+        // clear all checks in this column
+        wrap.querySelectorAll(`.option[data-ci="${ci}"]`).forEach(o => {
+          o.style.borderColor = '';
+          o.style.background = '';
+          o.querySelector('.opt-letter').innerHTML = '';
+        });
+        el.style.borderColor = 'var(--navy)';
+        el.style.background = '#eef1f7';
+        el.querySelector('.opt-letter').innerHTML = '&#10003;';
+        refreshNavGrid();
       });
     });
     card.appendChild(wrap);
@@ -874,7 +896,9 @@ function renderKategori(card, q){
     el.addEventListener('click', () => {
       const si = el.dataset.si, cat = parseInt(el.dataset.cat);
       answers[q.no].selected[si] = cat;
-      renderQuestion(currentIndex);
+      wrap.querySelectorAll(`.cat-radio[data-si="${si}"]`).forEach(r => r.classList.remove('checked'));
+      el.classList.add('checked');
+      refreshNavGrid();
     });
   });
   card.appendChild(wrap);
