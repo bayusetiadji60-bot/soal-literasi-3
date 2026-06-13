@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT Literasi Bahasa Indonesia SMP 2026</title>
+<style>
+:root{
+  --navy:#1b2a4a;
+  --navy2:#243b66;
+  --gold:#d9a440;
+  --cream:#f7f4ee;
+  --ink:#26303f;
+  --green:#3a8a5c;
+  --red:#c0473b;
+  --gray:#8b93a3;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+}
+.screen{display:none; min-height:100vh; flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ===== START SCREEN ===== */
+#start-screen{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  align-items:center; justify-content:center; padding:24px;
+}
+.start-card{
+  background:#fff; border-radius:20px; max-width:440px; width:100%;
+  padding:32px 28px; box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.start-card .eyebrow{
+  font-size:12px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--gold); font-weight:700; margin-bottom:6px;
+}
+.start-card h1{
+  font-size:22px; color:var(--navy); line-height:1.3; margin-bottom:4px;
+}
+.start-card .sub{
+  font-size:13px; color:var(--gray); margin-bottom:24px; line-height:1.5;
+}
+.field{margin-bottom:16px;}
+.field label{
+  display:block; font-size:13px; font-weight:600; color:var(--navy);
+  margin-bottom:6px;
+}
+.field input{
+  width:100%; padding:12px 14px; border:1.5px solid #e1ddd3;
+  border-radius:10px; font-size:15px; background:#fcfbf8;
+  transition:border-color .15s;
+}
+.field input:focus{outline:none; border-color:var(--gold);}
+.info-box{
+  background:#fdf6e8; border:1px solid #f0dca8; border-radius:10px;
+  padding:12px 14px; font-size:12.5px; color:#7a5c1e; margin-bottom:20px; line-height:1.6;
+}
+.btn-primary{
+  width:100%; padding:14px; background:var(--navy); color:#fff;
+  border:none; border-radius:10px; font-size:15px; font-weight:700;
+  cursor:pointer; transition:background .15s; letter-spacing:.3px;
+}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{background:#c7ccd6; cursor:not-allowed;}
+.err-msg{color:var(--red); font-size:12px; margin-top:-10px; margin-bottom:14px; display:none;}
+
+/* ===== EXAM SCREEN ===== */
+#exam-screen{padding-bottom:90px;}
+.exam-header{
+  background:var(--navy); color:#fff; padding:14px 16px;
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.exam-header .title{font-size:13px; font-weight:700; letter-spacing:.5px;}
+.exam-header .title small{display:block; font-size:11px; color:#b9c4dd; font-weight:400; margin-top:2px;}
+.timer{
+  background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px;
+  font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;
+  min-width:78px; text-align:center;
+}
+.timer.low{background:var(--red); animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+
+.progress-bar{height:5px; background:#e6e1d4; position:sticky; top:58px; z-index:19;}
+.progress-fill{height:100%; background:var(--gold); transition:width .25s; width:0%;}
+
+.nav-grid-wrap{padding:8px 16px; background:#fff; border-bottom:1px solid #ece7da;}
+.nav-grid-wrap .label{font-size:10px; color:var(--gray); font-weight:600; margin-bottom:6px; letter-spacing:1px; text-transform:uppercase;}
+.nav-grid{display:flex; gap:5px; overflow-x:auto; padding-bottom:2px; -webkit-overflow-scrolling:touch; scrollbar-width:thin;}
+.nav-dot{
+  flex:0 0 28px; width:28px; height:28px; border-radius:7px; border:1.5px solid #e1ddd3; background:#fcfbf8;
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;
+  color:var(--ink); cursor:pointer; transition:all .15s;
+}
+.nav-dot.answered{background:var(--green); border-color:var(--green); color:#fff;}
+.nav-dot.current{border-color:var(--navy); border-width:2px; box-shadow:0 0 0 3px rgba(27,42,74,.12);}
+
+.question-wrap{padding:18px 16px 16px;}
+.q-meta{
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+}
+.q-tag{
+  font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:20px;
+  letter-spacing:.5px; text-transform:uppercase;
+}
+.q-tag.no{background:var(--navy); color:#fff;}
+.q-tag.type{background:#eef1f7; color:var(--navy2);}
+.q-tag.level{background:#fdf0e3; color:#a5651b;}
+
+.reading-text{
+  background:#fff; border:1px solid #ece7da; border-radius:var(--radius);
+  padding:16px; margin-bottom:14px; font-size:14px; line-height:1.75;
+  max-height:280px; overflow-y:auto; white-space:pre-line;
+}
+.reading-text .rt-title{font-weight:700; color:var(--navy); margin-bottom:8px; font-size:15px;}
+.reading-text .rt-source{font-size:11.5px; color:var(--gray); margin-top:10px; font-style:italic;}
+
+.question-card{
+  background:#fff; border:1px solid #ece7da; border-radius:var(--radius);
+  padding:18px 16px; margin-bottom:14px;
+}
+.question-text{font-size:15.5px; line-height:1.65; font-weight:600; color:var(--ink); margin-bottom:16px;}
+.question-text .qextra{font-weight:400; display:block; margin-top:8px; font-size:14px; color:#444;}
+
+.options{display:flex; flex-direction:column; gap:10px;}
+.option{
+  display:flex; align-items:flex-start; gap:12px; padding:13px 14px;
+  border:1.5px solid #e1ddd3; border-radius:10px; cursor:pointer;
+  transition:all .12s; background:#fcfbf8; font-size:14.5px; line-height:1.5;
+}
+.option:active{transform:scale(.99);}
+.option.selected{border-color:var(--navy); background:#eef1f7;}
+.option .opt-letter{
+  flex-shrink:0; width:26px; height:26px; border-radius:7px; background:#fff;
+  border:1.5px solid #d6d1c3; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; color:var(--navy);
+}
+.option.selected .opt-letter{background:var(--navy); color:#fff; border-color:var(--navy);}
+/* checkbox style for jamak */
+.option.checkbox .opt-letter{border-radius:6px;}
+
+/* category table */
+.cat-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+.cat-table th{
+  background:var(--navy); color:#fff; padding:10px 8px; font-size:11.5px;
+  text-transform:uppercase; letter-spacing:.5px; text-align:center;
+}
+.cat-table th:first-child{text-align:left;}
+.cat-table td{padding:10px 8px; border-bottom:1px solid #ece7da; vertical-align:middle;}
+.cat-table tr:last-child td{border-bottom:none;}
+.cat-table td.stmt{font-size:13.5px; line-height:1.5;}
+.cat-table td.radio-cell{text-align:center;}
+.cat-radio{
+  width:24px; height:24px; border-radius:50%; border:2px solid #d6d1c3;
+  display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:all .12s; background:#fff;
+}
+.cat-radio.checked{border-color:var(--navy); background:var(--navy);}
+.cat-radio.checked::after{content:''; width:10px; height:10px; border-radius:50%; background:#fff;}
+.cat-table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+
+.hint{font-size:12px; color:var(--gold); font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+.hint::before{content:'ℹ'; font-size:13px;}
+
+.nav-buttons{
+  position:fixed; bottom:0; left:0; right:0; background:#fff;
+  border-top:1px solid #ece7da; padding:10px 16px; display:flex; gap:10px;
+  z-index:21; box-shadow:0 -2px 10px rgba(0,0,0,.05);
+}
+.btn-nav{
+  flex:1; padding:13px; border-radius:10px; font-size:14px; font-weight:700;
+  border:1.5px solid #e1ddd3; background:#fcfbf8; color:var(--ink); cursor:pointer;
+}
+.btn-nav.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.btn-nav:disabled{opacity:.4; cursor:not-allowed;}
+.btn-nav.finish{background:var(--green); border-color:var(--green); color:#fff;}
+
+/* ===== RESULT SCREEN ===== */
+#result-screen{align-items:center; justify-content:center; padding:24px; background:var(--cream);}
+.result-card{
+  background:#fff; border-radius:20px; max-width:440px; width:100%;
+  padding:32px 28px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.1);
+}
+.result-card .check-icon{
+  width:64px; height:64px; border-radius:50%; background:var(--green);
+  color:#fff; font-size:32px; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 16px;
+}
+.result-card h2{color:var(--navy); font-size:20px; margin-bottom:8px;}
+.result-card p{color:var(--gray); font-size:13.5px; line-height:1.6; margin-bottom:6px;}
+.result-card .student-info{
+  background:#f7f4ee; border-radius:10px; padding:14px; margin:18px 0; text-align:left;
+  font-size:13px; line-height:1.8;
+}
+.result-card .student-info b{color:var(--navy);}
+.spinner{
+  border:3px solid #e6e1d4; border-top-color:var(--navy); border-radius:50%;
+  width:24px; height:24px; animation:spin 0.8s linear infinite; margin:14px auto;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.status-msg{font-size:12.5px; margin-top:8px;}
+.status-msg.ok{color:var(--green); font-weight:600;}
+.status-msg.fail{color:var(--red); font-weight:600;}
+
+.score-circle{
+  width:110px; height:110px; border-radius:50%; margin:8px auto 4px;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size:34px; font-weight:800; box-shadow:0 10px 30px rgba(27,42,74,.25);
+}
+.score-label{
+  font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--gold); margin-top:10px;
+}
+.score-detail{
+  font-size:13px; color:var(--gray); margin-top:4px; margin-bottom:6px;
+}
+
+/* modal */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.5); display:none;
+  align-items:center; justify-content:center; z-index:50; padding:24px;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff; border-radius:16px; padding:24px; max-width:340px; width:100%; text-align:center;}
+.modal-box h3{color:var(--navy); margin-bottom:10px; font-size:17px;}
+.modal-box p{font-size:13.5px; color:#555; margin-bottom:18px; line-height:1.6;}
+.modal-actions{display:flex; gap:10px;}
+.modal-actions button{flex:1; padding:11px; border-radius:8px; font-weight:700; font-size:13.5px; border:none; cursor:pointer;}
+.modal-actions .cancel{background:#f0eee7; color:#555;}
+.modal-actions .confirm{background:var(--navy); color:#fff;}
+
+@media (min-width:600px){
+  .question-wrap{padding:24px;}
+  .reading-text{max-height:320px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== START SCREEN ===================== -->
+<div id="start-screen" class="screen active">
+  <div class="start-card">
+    <div class="eyebrow">Lomba Literasi 2026</div>
+    <h1>Latihan Soal Literasi Bahasa Indonesia SMP</h1>
+    <div class="sub">Dispendikbud Kab. Situbondo &mdash; 40 soal &middot; 90 menit. Isi identitas berikut sebelum memulai.</div>
+
+    <div class="field">
+      <label for="inp-nama">Nama Lengkap</label>
+      <input type="text" id="inp-nama" placeholder="Contoh: Ahmad Fauzan" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="inp-sekolah">Asal Sekolah</label>
+      <input type="text" id="inp-sekolah" placeholder="Contoh: SMP Negeri 1 Situbondo" autocomplete="off">
+    </div>
+    <div class="err-msg" id="err-msg">Mohon isi semua data dengan benar sebelum memulai ujian.</div>
+
+    <div class="info-box">
+      Waktu pengerjaan <b>90 menit</b>, dimulai setelah kamu menekan tombol mulai. Jawaban akan tersimpan otomatis saat ujian selesai. Pastikan koneksi internet stabil.
+    </div>
+
+    <button class="btn-primary" id="btn-start">Mulai Ujian</button>
+  </div>
+</div>
+
+<!-- ===================== EXAM SCREEN ===================== -->
+<div id="exam-screen" class="screen">
+  <div class="exam-header">
+    <div class="title">CBT Literasi Bahasa Indonesia<small id="hdr-name">-</small></div>
+    <div class="timer" id="timer">90:00</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <div class="nav-grid-wrap">
+    <div class="label">Navigasi Soal</div>
+    <div class="nav-grid" id="nav-grid"></div>
+  </div>
+
+  <div class="question-wrap" id="question-wrap"></div>
+
+  <div class="nav-buttons">
+    <button class="btn-nav" id="btn-prev">&larr; Sebelumnya</button>
+    <button class="btn-nav primary" id="btn-next">Selanjutnya &rarr;</button>
+    <button class="btn-nav finish" id="btn-finish" style="display:none;">Selesai</button>
+  </div>
+</div>
+
+<!-- ===================== RESULT SCREEN ===================== -->
+<div id="result-screen" class="screen">
+  <div class="result-card">
+    <div class="check-icon">&#10003;</div>
+    <h2>Ujian Selesai!</h2>
+    <p>Terima kasih telah mengerjakan latihan soal literasi. Berikut hasil ujianmu:</p>
+    <div id="result-score"></div>
+    <div class="student-info" id="result-info"></div>
+    <div class="spinner" id="result-spinner"></div>
+    <div class="status-msg" id="result-status"></div>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM MODAL ===================== -->
+<div class="modal-overlay" id="modal-finish">
+  <div class="modal-box">
+    <h3>Selesaikan Ujian?</h3>
+    <p id="modal-text">Pastikan semua soal sudah kamu kerjakan. Setelah ini, jawaban tidak dapat diubah lagi.</p>
+    <div class="modal-actions">
+      <button class="cancel" id="modal-cancel">Periksa Lagi</button>
+      <button class="confirm" id="modal-confirm">Ya, Selesai</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   GOOGLE SHEET ENDPOINT
+   Ganti URL di bawah dengan Web App URL hasil deploy
+   Apps Script (lihat instruksi di akhir chat).
+   ===================================================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDtbWefzhkowMie0XpPt_9ZZHsafXruxeLUcIg82ZyYfhZAnB-uGgsNtwh9L3WTI3vBQ/exec";
+
+/* =====================================================
+   DATA SOAL
+   type: 'pg'      -> pilihan ganda biasa (1 jawaban)
+   type: 'jamak'   -> pilihan ganda kompleks, 2 jawaban benar dari 5 opsi
+   type: 'kategori'-> pilihan ganda kompleks kategori (tabel benar/salah dsb)
+   ===================================================== */
+
+const readingTexts = {
+  t1: {title:"TEKS 1 — Krisis Air Bersih di Pelosok Nusantara", source:"Sumber: Diadaptasi dari berbagai sumber, 2024",
+  body:`Akses air bersih masih menjadi persoalan serius di berbagai pelosok Indonesia. Berdasarkan data Kementerian Kesehatan tahun 2024, sekitar 28 juta penduduk Indonesia belum memiliki akses terhadap air minum yang layak. Kondisi ini paling parah ditemukan di wilayah Indonesia bagian timur, terutama di Provinsi Nusa Tenggara Timur (NTT) dan Papua.
+
+Di Desa Fatukopa, Kabupaten Timor Tengah Selatan, NTT, warga harus berjalan sejauh 3–5 kilometer setiap hari untuk mengambil air dari sumber mata air alami. Sebagian besar beban tersebut dipikul oleh perempuan dan anak-anak. Ibu Yuliana, salah seorang warga, menuturkan bahwa ia harus bangun pukul 04.00 dini hari agar sempat mengambil air sebelum memasak dan mengantar anak ke sekolah.
+
+Pemerintah pusat telah mengalokasikan anggaran senilai Rp2,4 triliun dalam APBN 2024 untuk program penyediaan air bersih di daerah tertinggal. Program ini mencakup pembangunan sumur bor, pipa distribusi, dan instalasi pengolahan air sederhana. Namun, realisasi di lapangan sering terkendala oleh sulitnya medan dan kurangnya tenaga teknis di daerah terpencil.
+
+Pakar lingkungan dari Universitas Gadjah Mada, Dr. Hendra Kusuma, menyatakan bahwa persoalan air bersih tidak bisa diselesaikan hanya dengan pendekatan infrastruktur. Diperlukan juga perubahan perilaku masyarakat dalam menjaga kelestarian sumber air, terutama dengan tidak menebang pohon di daerah resapan dan mengurangi penggunaan pestisida yang mencemari air tanah.
+
+Krisis air bersih bukan hanya soal kekurangan fisik, tetapi juga soal keadilan dan hak asasi manusia. Setiap warga negara berhak mendapatkan air bersih yang cukup dan aman. Oleh sebab itu, penyelesaiannya harus melibatkan sinergi antara pemerintah, masyarakat, dan dunia usaha secara berkelanjutan.`},
+
+  t2: {title:"TEKS 2 — Satu Pagi di Ujung Musim", source:"Sumber: Karya fiktif untuk keperluan pendidikan, 2025",
+  body:`Hujan turun deras sejak subuh. Aroma tanah basah menguar dari ladang di belakang rumah Pak Darmo. Ia duduk di beranda, memandangi deretan pohon jagung yang rebah diterpa angin malam tadi. Hatinya seperti remuk melihat buah kerja kerasnya selama tiga bulan hancur dalam semalam.
+
+"Pak, sarapan dulu," suara Sari, putrinya yang baru duduk di kelas delapan, memecah lamunan.
+
+Pak Darmo menoleh. Ada semangkuk bubur jagung panas dan secangkir kopi hitam di meja. Ia tersenyum tipis. "Terima kasih, Ri."
+
+Sari duduk di sampingnya. "Pak, tanaman jagungnya bisa ditanam lagi. Masih ada benih yang disimpan di lumbung."
+
+Pak Darmo mengangguk pelan. Ia tahu gadis itu benar. Namun ada sesuatu yang lebih berat dari sekadar kehilangan jagung—utang pupuk yang belum terbayar, biaya sekolah Sari, dan istrinya yang masih dalam perawatan di puskesmas. Semua itu berhimpun di dadanya seperti batu.
+
+"Bapak tidak akan menyerah," katanya akhirnya, lebih kepada dirinya sendiri. "Tanah ini sudah membesarkan kita, Ri. Kita tidak boleh meninggalkannya begitu saja."
+
+Sari meraih tangan bapaknya. Jemari tua itu penuh kapalan—bekas cangkul, bekas panas, bekas bertahan. Air mata Sari hampir jatuh, tetapi ia tahan. Ia harus kuat. Untuk bapaknya.`},
+
+  t3: {title:"TEKS 3 — Skor Literasi Siswa SMP (AKM 2023)", source:"Sumber: Diadaptasi dari laporan Kemendikbudristek, 2023",
+  body:`Tabel Skor Literasi AKM 2023:
+| Provinsi | Skor Literasi | Rata-rata Nasional | Kategori |
+| DKI Jakarta | 512 | 478 | Di atas rata-rata |
+| Jawa Timur | 481 | 478 | Di atas rata-rata |
+| Jawa Tengah | 476 | 478 | Di bawah rata-rata |
+| Sulawesi Selatan | 462 | 478 | Di bawah rata-rata |
+| Nusa Tenggara Timur | 431 | 478 | Di bawah rata-rata |
+| Papua | 418 | 478 | Di bawah rata-rata |
+
+Catatan Analisis:
+Asesmen Kompetensi Minimum (AKM) merupakan evaluasi yang mengukur kemampuan literasi membaca dan numerasi siswa. Skor AKM literasi dihitung dalam skala 0–600. Data di atas menunjukkan bahwa sebagian besar provinsi di wilayah Indonesia timur masih berada di bawah rata-rata nasional.
+
+Rendahnya skor literasi di beberapa daerah berkaitan erat dengan keterbatasan akses terhadap bahan bacaan, minimnya perpustakaan sekolah yang memadai, serta kurangnya program pembiasaan membaca. Di sisi lain, DKI Jakarta unggul jauh karena fasilitas pendidikan dan akses internet yang lebih merata.
+
+Para ahli pendidikan menyatakan bahwa peningkatan skor literasi memerlukan waktu setidaknya 3–5 tahun program intervensi yang konsisten, mulai dari pelatihan guru, pengadaan buku, hingga keterlibatan orang tua dalam kegiatan membaca di rumah.`},
+
+  t4: {title:"TEKS 4 — Cara Membuat Kompos dari Sampah Organik Rumah Tangga", source:"Sumber: Diadaptasi dari berbagai sumber pertanian organik, 2024",
+  body:`Kompos merupakan pupuk organik yang dihasilkan dari proses penguraian bahan-bahan organik oleh mikroorganisme. Membuat kompos dari sampah dapur adalah cara sederhana yang dapat dilakukan siapa saja untuk mengurangi sampah sekaligus menyuburkan tanah.
+
+Bahan yang dibutuhkan: sampah organik (sisa sayuran, kulit buah, ampas kopi/teh), tanah, air, dan wadah atau lubang kompos.
+
+Langkah-langkah:
+1. Kumpulkan sampah organik dan hindari bahan yang mengandung minyak atau daging karena dapat menarik hama.
+2. Potong atau cacah sampah menjadi bagian kecil agar lebih cepat terurai.
+3. Letakkan lapisan tanah setebal 5 cm di dasar wadah, lalu tambahkan lapisan sampah organik setebal 10 cm.
+4. Ulangi lapisan tanah dan sampah secara bergantian hingga wadah penuh.
+5. Siram dengan sedikit air agar kelembapan terjaga, tetapi jangan terlalu basah.
+6. Aduk campuran setiap 3–5 hari sekali untuk mempercepat proses pengomposan.
+7. Kompos siap digunakan setelah 4–6 minggu, ditandai dengan warna coklat kehitaman, tekstur remah, dan bau seperti tanah.`},
+
+  t5: {title:"TEKS 5 — Teknologi Kecerdasan Buatan dalam Dunia Pendidikan", source:"Sumber: Diadaptasi dari Jurnal Inovasi Pendidikan Indonesia, 2024",
+  body:`Kecerdasan buatan atau Artificial Intelligence (AI) semakin merambah dunia pendidikan. Di beberapa sekolah di Singapura dan Korea Selatan, sistem AI digunakan untuk menganalisis gaya belajar siswa secara individual dan menyesuaikan materi pembelajaran secara otomatis. Sistem ini dikenal sebagai adaptive learning atau pembelajaran adaptif.
+
+Di Indonesia, pemanfaatan AI dalam pendidikan masih dalam tahap awal. Beberapa platform edutech, seperti Zenius dan Ruangguru, telah mengintegrasikan fitur berbasis AI untuk merekomendasikan soal latihan yang sesuai dengan kelemahan belajar masing-masing siswa. Hasilnya cukup menjanjikan—siswa yang konsisten menggunakan platform tersebut menunjukkan peningkatan nilai rata-rata hingga 15–20% dalam tiga bulan.
+
+Namun, penerapan AI dalam pendidikan juga menuai kekhawatiran. Para pendidik dan pakar psikologi pendidikan mengingatkan bahwa ketergantungan berlebihan pada teknologi dapat mengurangi kemampuan berpikir kritis dan kreativitas siswa. Selain itu, kesenjangan akses terhadap perangkat digital masih menjadi hambatan bagi siswa di daerah terpencil.
+
+Oleh karena itu, para ahli merekomendasikan pendekatan hybrid: AI digunakan sebagai alat bantu, bukan pengganti guru. Interaksi manusiawi antara guru dan siswa tetap menjadi pondasi yang tidak dapat tergantikan dalam proses pendidikan.`},
+
+  t6: {title:'TEKS 6 — Puisi "Pelabuhan Tua"', source:"Sumber: Karya fiktif untuk keperluan pendidikan, 2025",
+  body:`Pelabuhan Tua
+
+Di tepi dermaga yang mulai lapuk,
+Nelayan tua merajut jala dengan tangan gemetar.
+Lautnya sudah terlalu banyak bercerita—
+Tentang badai, tentang tangkapan yang menipis,
+Tentang anak-anak yang pergi ke kota dan tak kembali.
+
+Bau asin menyapu wajahnya yang legam.
+Matanya menyipit memandang cakrawala,
+Seperti sedang memanggil pulang kapal-kapal kenangan.
+
+Ia tahu: laut takkan pernah berdusta.
+Yang berdusta adalah waktu—
+Yang mengikis harapan lebih cepat
+Dari ombak yang mengikis karang.`},
+
+  t7: {title:"TEKS 7 — Daur Ulang Sampah Plastik: Solusi atau Sekadar Ilusi?", source:"Sumber: Diadaptasi dari Majalah Lingkungan Hidup Indonesia, 2024",
+  body:`Setiap tahun, Indonesia menghasilkan lebih dari 7 juta ton sampah plastik, dan hanya sekitar 10–12% yang berhasil didaur ulang. Sisanya berakhir di tempat pembuangan akhir (TPA), sungai, atau lautan. Indonesia bahkan pernah menempati posisi kedua dunia sebagai penghasil sampah plastik ke laut setelah Tiongkok.
+
+Program daur ulang gencar dipromosikan sebagai solusi utama. Namun, para pegiat lingkungan mengingatkan bahwa daur ulang plastik memiliki keterbatasan teknis—sebagian besar jenis plastik hanya dapat didaur ulang satu atau dua kali sebelum kualitasnya menurun drastis dan akhirnya dibuang juga.
+
+Di sisi lain, inovasi terbaru menawarkan harapan baru. Teknologi chemical recycling atau daur ulang kimiawi mampu mengurai plastik kembali ke bentuk monomernya dan menghasilkan bahan baku plastik baru berkualitas tinggi. Namun, teknologi ini masih sangat mahal dan belum tersedia secara luas di Indonesia.
+
+Para ahli sepakat bahwa solusi jangka panjang bukan hanya pada daur ulang, melainkan pada pengurangan produksi plastik sekali pakai sejak sumber. Kebijakan cukai plastik, larangan kantong plastik, dan pengembangan kemasan berbasis bahan hayati (bioplastik) disebut sebagai pendekatan yang lebih menjanjikan.
+
+Masalah sampah plastik adalah masalah sistemik yang tidak bisa diselesaikan oleh satu pihak saja. Kesadaran konsumen, regulasi pemerintah yang tegas, dan inovasi industri harus berjalan beriringan agar Indonesia benar-benar keluar dari jebakan krisis plastik.`},
+
+  t8: {title:"TEKS 8 — Ulasan Novel: Bumi Manusia – Pramoedya Ananta Toer", source:"Sumber: Ulasan ditulis untuk keperluan pendidikan, 2025",
+  body:`Identitas Buku: Judul: Bumi Manusia | Penulis: Pramoedya Ananta Toer | Penerbit: Lentera Dipantara | Tahun Terbit: 1980 (cetakan terbaru: 2005) | Tebal: 535 halaman
+
+Sinopsis Singkat: Novel ini mengisahkan Minke, seorang pemuda pribumi terpelajar di era kolonial Belanda akhir abad ke-19. Ia jatuh cinta pada Annelies, gadis Indo keturunan Belanda-Jawa, dan harus berhadapan dengan sistem hukum kolonial yang diskriminatif. Melalui perjuangan Minke, Pramoedya menggambarkan ketidakadilan sosial dan kebangkitan kesadaran nasional.
+
+Kelebihan: Bahasa Pramoedya kaya dan puitis, namun tetap mengalir dengan natural. Penggambaran latar sejarah sangat detail dan terasa autentik—pembaca seolah-olah benar-benar berada di masa kolonial. Karakter Minke dan Nyai Ontosoroh digambarkan dengan kedalaman psikologis yang luar biasa, sehingga pembaca mudah berempati.
+
+Kekurangan: Bagi pembaca yang tidak terbiasa dengan kosakata khas bahasa Jawa dan Belanda yang tersebar di sepanjang teks, beberapa bagian mungkin terasa membingungkan. Alur cerita yang lambat di bagian awal juga dapat membuat pembaca yang terbiasa dengan cerita aksi merasa kurang sabar.
+
+Kesimpulan: Bumi Manusia adalah mahakarya sastra Indonesia yang wajib dibaca oleh siapa saja yang ingin memahami sejarah, identitas, dan perjuangan bangsa. Novel ini bukan sekadar hiburan, melainkan cermin peradaban.`}
+};
+
+const questions = [
+// ===== TEKS 1 (1-5) =====
+{no:1, text:"t1", type:"pg", level:"LOTS",
+ q:"Berdasarkan teks di atas, berapa jumlah penduduk Indonesia yang belum memiliki akses air minum layak menurut data Kementerian Kesehatan tahun 2024?",
+ options:[{l:"A",t:"18 juta jiwa"},{l:"B",t:"22 juta jiwa"},{l:"C",t:"28 juta jiwa"},{l:"D",t:"35 juta jiwa"}]},
+{no:2, text:"t1", type:"pg", level:"LOTS",
+ q:"Berdasarkan informasi dalam teks, apa yang paling mungkin terjadi jika program penyediaan air bersih dari pemerintah berhasil dijalankan dengan optimal di Desa Fatukopa?",
+ options:[{l:"A",t:"Harga tanah di desa tersebut akan meningkat drastis."},{l:"B",t:"Perempuan dan anak-anak tidak perlu lagi berjalan jauh untuk mengambil air."},{l:"C",t:"Seluruh warga desa akan pindah ke kota besar."},{l:"D",t:"Desa Fatukopa akan menjadi pusat pariwisata air di NTT."}]},
+{no:3, text:"t1", type:"pg", level:"HOTS",
+ q:'Perhatikan dua pernyataan berikut! (1) Pemerintah telah mengalokasikan anggaran besar untuk air bersih. (2) Realisasi program terkendala medan dan kurangnya tenaga teknis. Berdasarkan teks, simpulan yang paling tepat tentang hubungan kedua pernyataan tersebut adalah …',
+ options:[{l:"A",t:"Anggaran besar sudah cukup untuk menyelesaikan masalah air bersih."},{l:"B",t:"Anggaran besar tidak menjamin keberhasilan program tanpa dukungan lapangan yang memadai."},{l:"C",t:"Pemerintah tidak serius menangani masalah air bersih."},{l:"D",t:"Kendala teknis tidak berpengaruh terhadap keberhasilan program."}]},
+{no:4, text:"t1", type:"pg", level:"LOTS",
+ q:'Dalam teks, kata "resapan" pada kalimat "tidak menebang pohon di daerah resapan" mengacu pada …',
+ options:[{l:"A",t:"Daerah yang mudah banjir akibat curah hujan tinggi."},{l:"B",t:"Wilayah hutan lindung yang dijaga pemerintah."},{l:"C",t:"Daerah yang mampu menyerap air hujan ke dalam tanah."},{l:"D",t:"Kawasan pantai yang digunakan sebagai tempat wisata."}]},
+{no:5, text:"t1", type:"jamak", level:"MOTS",
+ q:"Menurut Dr. Hendra Kusuma, penyelesaian krisis air bersih memerlukan pendekatan yang menyeluruh. Pernyataan berikut ini yang sesuai dengan pandangan tersebut adalah …",
+ options:[{l:"A",t:"Cukup membangun sumur bor di setiap desa."},{l:"B",t:"Perlu mengubah perilaku masyarakat dalam menjaga sumber air."},{l:"C",t:"Penebangan pohon di daerah resapan tidak perlu dilarang."},{l:"D",t:"Penggunaan pestisida berlebihan perlu dikurangi untuk menjaga kualitas air tanah."},{l:"E",t:"Peran swasta tidak diperlukan dalam penanganan air bersih."}]},
+
+// ===== TEKS 2 (6-10) =====
+{no:6, text:"t2", type:"pg", level:"MOTS",
+ q:'Kalimat "Hatinya seperti remuk melihat buah kerja kerasnya selama tiga bulan hancur dalam semalam" mengandung majas …',
+ options:[{l:"A",t:"Metafora, karena membandingkan hati dengan benda yang pecah tanpa kata penghubung."},{l:"B",t:"Simile, karena menggunakan kata pembanding seperti untuk melukiskan perasaan."},{l:"C",t:"Hiperbola, karena melebih-lebihkan rasa sakit yang dirasakan tokoh."},{l:"D",t:"Personifikasi, karena memberikan sifat manusia pada benda mati."}]},
+{no:7, text:"t2", type:"pg", level:"MOTS",
+ q:"Nilai moral yang paling tepat untuk disimpulkan dari cerpen tersebut adalah …",
+ options:[{l:"A",t:"Petani harus selalu berpindah ke kota saat menghadapi kesulitan."},{l:"B",t:"Keuletan dan ketegaran menghadapi cobaan merupakan sikap yang patut diteladani."},{l:"C",t:"Anak tidak perlu peduli terhadap kesulitan orang tuanya."},{l:"D",t:"Kegagalan panen adalah akhir dari segalanya bagi seorang petani."}]},
+{no:8, text:"t2", type:"pg", level:"LOTS",
+ q:'Perhatikan kalimat: "Aroma tanah basah menguar dari ladang di belakang rumah Pak Darmo." Citraan yang digunakan dalam kalimat tersebut adalah citraan …',
+ options:[{l:"A",t:"Penglihatan (visual)"},{l:"B",t:"Penciuman (olfaktori)"},{l:"C",t:"Pendengaran (auditif)"},{l:"D",t:"Perasaan (taktil)"}]},
+{no:9, text:"t2", type:"jamak", level:"HOTS",
+ q:'Perhatikan dua kutipan berikut! Kutipan A: "Tanah ini sudah membesarkan kita, Ri. Kita tidak boleh meninggalkannya begitu saja." Kutipan B: "Jemari tua itu penuh kapalan—bekas cangkul, bekas panas, bekas bertahan." Simpulan yang tepat berdasarkan kedua kutipan tersebut adalah …',
+ options:[{l:"A",t:"Pak Darmo adalah petani muda yang baru mulai bertani."},{l:"B",t:"Pak Darmo memiliki keterikatan emosional yang dalam dengan tanahnya."},{l:"C",t:"Kerja keras Pak Darmo sebagai petani tercermin dari fisik dan perkataannya."},{l:"D",t:"Pak Darmo berencana menjual tanahnya setelah gagal panen."},{l:"E",t:"Sari tidak peduli dengan kondisi bapaknya."}]},
+{no:10, text:"t2", type:"pg", level:"HOTS",
+ q:"Situasi yang dialami Pak Darmo dalam cerpen memiliki relevansi dengan kondisi nyata di Indonesia karena …",
+ options:[{l:"A",t:"Petani di Indonesia selalu berhasil mendapatkan panen melimpah setiap musim."},{l:"B",t:"Banyak petani kecil di Indonesia menghadapi beban ekonomi berlapis seperti utang, biaya kesehatan, dan biaya pendidikan."},{l:"C",t:"Pemerintah Indonesia telah sepenuhnya menyelesaikan masalah kemiskinan petani."},{l:"D",t:"Tanaman jagung tidak lagi dibudidayakan di Indonesia karena kalah saing."}]},
+
+// ===== TEKS 3 (11-16) =====
+{no:11, text:"t3", type:"pg", level:"LOTS",
+ q:"Berdasarkan tabel data di atas, provinsi manakah yang memiliki skor literasi paling rendah?",
+ options:[{l:"A",t:"Nusa Tenggara Timur"},{l:"B",t:"Sulawesi Selatan"},{l:"C",t:"Papua"},{l:"D",t:"Jawa Tengah"}]},
+{no:12, text:"t3", type:"pg", level:"MOTS",
+ q:"Berdasarkan tabel dan catatan analisis, simpulan yang paling tepat mengenai faktor penyebab rendahnya skor literasi di Indonesia timur adalah …",
+ options:[{l:"A",t:"Siswa di Indonesia timur malas belajar."},{l:"B",t:"Keterbatasan fasilitas, bahan bacaan, dan program pembiasaan membaca menjadi faktor utama."},{l:"C",t:"Guru di Indonesia timur tidak memiliki kemampuan mengajar."},{l:"D",t:"Bahasa daerah menjadi satu-satunya hambatan literasi."}]},
+{no:13, text:"t3", type:"kategori", level:"MOTS",
+ q:"Tentukan apakah pernyataan berikut ini BENAR atau SALAH berdasarkan informasi dalam tabel dan catatan analisis!",
+ categories:["BENAR","SALAH"],
+ statements:[
+   "Skor literasi DKI Jakarta lebih tinggi dari rata-rata nasional.",
+   "Jawa Timur berada di bawah rata-rata nasional.",
+   "Peningkatan literasi dapat dicapai dalam waktu kurang dari satu tahun menurut para ahli.",
+   "Akses internet yang merata berkontribusi pada tingginya skor literasi DKI Jakarta."
+ ]},
+{no:14, text:"t3", type:"pg", level:"LOTS",
+ q:'Dalam catatan analisis, istilah "intervensi" pada kalimat "program intervensi yang konsisten" memiliki makna …',
+ options:[{l:"A",t:"Kegiatan ujian yang dilakukan secara rutin oleh pemerintah."},{l:"B",t:"Tindakan campur tangan atau upaya terencana untuk memperbaiki suatu kondisi."},{l:"C",t:"Program hiburan untuk meningkatkan minat baca siswa."},{l:"D",t:"Kebijakan pengurangan anggaran pendidikan."}]},
+{no:15, text:"t3", type:"pg", level:"MOTS",
+ q:"Ide pokok paragraf ketiga dari catatan analisis adalah …",
+ options:[{l:"A",t:"Skor literasi Indonesia sudah melampaui rata-rata internasional."},{l:"B",t:"Peningkatan skor literasi membutuhkan program intervensi jangka panjang yang melibatkan berbagai pihak."},{l:"C",t:"Orang tua tidak memiliki peran dalam meningkatkan kemampuan membaca anak."},{l:"D",t:"Pemerintah sudah berhasil meningkatkan literasi dalam satu tahun."}]},
+{no:16, text:"t3", type:"pg", level:"HOTS",
+ q:'Kalimat berikut ini diambil dari catatan analisis: "Di sisi lain, DKI Jakarta unggul jauh karena fasilitas pendidikan dan akses internet yang lebih merata." Penggunaan konjungsi "di sisi lain" dalam kalimat tersebut berfungsi untuk …',
+ options:[{l:"A",t:"Menyatakan sebab akibat antara dua kondisi yang berbeda."},{l:"B",t:"Menyatakan pertentangan atau kontras dengan informasi sebelumnya."},{l:"C",t:"Menyatakan penguatan terhadap argumen yang telah disebutkan."},{l:"D",t:"Menyatakan urutan waktu antara dua peristiwa."}]},
+
+// ===== TEKS 4 (17-20) =====
+{no:17, text:"t4", type:"pg", level:"LOTS",
+ q:"Berdasarkan teks prosedur di atas, urutan langkah yang benar dalam membuat kompos adalah …",
+ options:[{l:"A",t:"Cacah sampah → siram air → tumpuk bergantian → aduk → tunggu 4–6 minggu."},{l:"B",t:"Kumpulkan sampah → cacah → tumpuk bergantian → siram → aduk → tunggu 4–6 minggu."},{l:"C",t:"Kumpulkan sampah → tumpuk → aduk → siram → cacah → tunggu 4–6 minggu."},{l:"D",t:"Siram air → kumpulkan sampah → cacah → tumpuk → aduk → tunggu 4–6 minggu."}]},
+{no:18, text:"t4", type:"pg", level:"MOTS",
+ q:"Jika seseorang memasukkan sisa daging ayam ke dalam wadah kompos, apa yang paling mungkin terjadi?",
+ options:[{l:"A",t:"Kompos akan matang lebih cepat karena kandungan protein tinggi."},{l:"B",t:"Proses pengomposan akan terganggu karena hama dan bau tidak sedap akan muncul."},{l:"C",t:"Tanaman yang dipupuk kompos tersebut akan tumbuh lebih subur."},{l:"D",t:"Daging akan langsung berubah menjadi tanah dalam waktu singkat."}]},
+{no:19, text:"t4", type:"pg", level:"LOTS",
+ q:"Ciri-ciri kompos yang sudah siap digunakan berdasarkan teks adalah …",
+ options:[{l:"A",t:"Berwarna hijau, berbau menyengat, dan bertekstur kasar."},{l:"B",t:"Berwarna coklat kehitaman, bertekstur remah, dan berbau seperti tanah."},{l:"C",t:"Berwarna putih, berbau segar, dan bertekstur padat."},{l:"D",t:"Berwarna kuning, tidak berbau, dan bertekstur cair."}]},
+{no:20, text:"t4", type:"pg", level:"MOTS",
+ q:"Berdasarkan langkah pembuatan kompos, mengapa pengadukan perlu dilakukan setiap 3–5 hari sekali?",
+ options:[{l:"A",t:"Agar bau kompos tidak menyebar ke lingkungan sekitar."},{l:"B",t:"Agar oksigen masuk dan mikroorganisme pengurai bekerja lebih aktif sehingga proses pengomposan lebih cepat."},{l:"C",t:"Agar kompos tidak terlalu basah karena air hujan."},{l:"D",t:"Agar lapisan tanah dan sampah tidak tercampur."}]},
+
+// ===== TEKS 5 (21-24) =====
+{no:21, text:"t5", type:"pg", level:"LOTS",
+ q:'Dalam teks, istilah "adaptive learning" atau pembelajaran adaptif mengacu pada …',
+ options:[{l:"A",t:"Metode belajar di luar kelas yang memanfaatkan lingkungan alam."},{l:"B",t:"Sistem pembelajaran yang menyesuaikan materi dengan kebutuhan dan gaya belajar masing-masing siswa secara otomatis."},{l:"C",t:"Program beasiswa untuk siswa yang berprestasi di bidang teknologi."},{l:"D",t:"Kurikulum nasional yang diperbarui setiap lima tahun sekali."}]},
+{no:22, text:"t5", type:"pg", level:"MOTS",
+ q:"Perhatikan hubungan logis antara paragraf 2 dan paragraf 3 teks di atas! Hubungan yang paling tepat untuk menggambarkan keduanya adalah …",
+ options:[{l:"A",t:"Paragraf 2 memaparkan manfaat AI, sementara paragraf 3 memaparkan kekhawatiran atas penggunaannya."},{l:"B",t:"Paragraf 2 dan 3 sama-sama mendukung penggunaan AI tanpa syarat."},{l:"C",t:"Paragraf 2 membantah fakta yang disebutkan di paragraf 3."},{l:"D",t:"Paragraf 3 merupakan solusi atas masalah yang dikemukakan di paragraf 2."}]},
+{no:23, text:"t5", type:"pg", level:"LOTS",
+ q:'Kata "edutech" dalam teks merupakan gabungan dari dua kata, yaitu …',
+ options:[{l:"A",t:"Education dan technique"},{l:"B",t:"Education dan technology"},{l:"C",t:"Educator dan technical"},{l:"D",t:"Educated dan technological"}]},
+{no:24, text:"t5", type:"kategori", level:"MOTS",
+ q:"Berdasarkan isi teks, pasangkan setiap pernyataan berikut dengan kategori yang tepat!",
+ categories:["FAKTA","PENDAPAT"],
+ statements:[
+   "Zenius dan Ruangguru mengintegrasikan fitur berbasis AI.",
+   "Ketergantungan pada AI dapat mengurangi kreativitas siswa.",
+   "Siswa pengguna platform AI meningkat nilainya 15–20% dalam tiga bulan.",
+   "AI sebaiknya hanya sebagai alat bantu, bukan pengganti guru."
+ ]},
+
+// ===== TEKS 6 (25-31) =====
+{no:25, text:"t6", type:"pg", level:"LOTS",
+ q:'Latar tempat yang tergambar dalam puisi "Pelabuhan Tua" adalah …',
+ options:[{l:"A",t:"Pasar ikan di pagi hari."},{l:"B",t:"Dermaga atau pelabuhan lama di tepi laut."},{l:"C",t:"Perkotaan yang ramai dan modern."},{l:"D",t:"Rumah nelayan di atas bukit."}]},
+{no:26, text:"t6", type:"pg", level:"MOTS",
+ q:'Larik "Seperti sedang memanggil pulang kapal-kapal kenangan" mengandung majas …',
+ options:[{l:"A",t:"Personifikasi, karena kapal diberikan kemampuan untuk pulang."},{l:"B",t:"Simile, karena membandingkan pandangan mata dengan tindakan memanggil menggunakan kata pembanding seperti."},{l:"C",t:"Metafora, karena langsung menyamakan kenangan dengan kapal."},{l:"D",t:"Hiperbola, karena melebih-lebihkan jumlah kapal yang ada."}]},
+{no:27, text:"t6", type:"pg", level:"HOTS",
+ q:'Respons emosional yang paling tepat saat membaca keseluruhan puisi "Pelabuhan Tua" adalah perasaan …',
+ options:[{l:"A",t:"Gembira dan penuh semangat karena nelayan berhasil menangkap ikan banyak."},{l:"B",t:"Haru dan simpati terhadap kesepian dan ketabahan seorang nelayan tua yang ditinggalkan zaman."},{l:"C",t:"Marah kepada anak-anak nelayan yang meninggalkan kampung."},{l:"D",t:"Takut dan cemas karena laut digambarkan sangat berbahaya."}]},
+{no:28, text:"t6", type:"pg", level:"LOTS",
+ q:'Kata "legam" dalam larik "Bau asin menyapu wajahnya yang legam" berarti …',
+ options:[{l:"A",t:"Pucat dan lesu karena kelelahan."},{l:"B",t:"Hitam gelap karena terbakar sinar matahari."},{l:"C",t:"Berminyak karena banyak keringat."},{l:"D",t:"Luka-luka akibat terkena badai."}]},
+{no:29, text:"t6", type:"kategori", level:"MOTS",
+ q:"Susunlah kerangka isi puisi berdasarkan tiga bait di bawah ini dengan menghubungkan setiap bait dengan gambaran yang tepat! Pilih satu gambaran untuk setiap bait.",
+ cols:["Bait 1 (larik 1–5)","Bait 2 (larik 6–8)","Bait 3 (larik 9–13)"],
+ statements:[
+   "Kesepian nelayan dan kehilangan keluarga yang pergi ke kota",
+   "Gambaran fisik nelayan yang menatap laut penuh kerinduan",
+   "Refleksi bahwa waktu lebih kejam dari alam dalam mengikis harapan"
+ ],
+ matchType:"bait"},
+{no:30, text:"t6", type:"pg", level:"MOTS",
+ q:'Larik "Yang mengikis harapan lebih cepat / Dari ombak yang mengikis karang" menggunakan gaya bahasa …',
+ options:[{l:"A",t:"Simile dengan makna waktu lebih merusak harapan daripada ombak merusak karang."},{l:"B",t:"Metafora dengan makna harapan adalah karang yang kuat."},{l:"C",t:"Hiperbola dengan makna ombak sangat kuat hingga menghancurkan semua karang."},{l:"D",t:"Personifikasi dengan makna waktu memiliki tangan yang bisa mengikis."}]},
+{no:31, text:"t6", type:"jamak", level:"HOTS",
+ q:'Bandingkan puisi "Pelabuhan Tua" dengan cerpen "Satu Pagi di Ujung Musim" (Teks 2)! Persamaan tema atau nilai yang terdapat pada keduanya adalah …',
+ options:[{l:"A",t:"Keduanya menggambarkan tokoh yang menyerah menghadapi kesulitan hidup."},{l:"B",t:"Keduanya mengangkat tema ketabahan menghadapi kesulitan hidup."},{l:"C",t:"Keduanya menggambarkan tokoh yang bekerja keras di sektor pertanian."},{l:"D",t:"Keduanya mengangkat nilai ketegaran dan keterikatan tokoh pada profesi/tempat yang dicintai."},{l:"E",t:"Keduanya berlatar kota besar yang modern."}]},
+
+// ===== TEKS 7 (32-37) =====
+{no:32, text:"t7", type:"pg", level:"LOTS",
+ q:'Dalam teks, istilah "chemical recycling" yang disebutkan pada paragraf ketiga berarti …',
+ options:[{l:"A",t:"Proses pembakaran sampah plastik untuk menghasilkan energi listrik."},{l:"B",t:"Metode daur ulang yang menguraikan plastik secara kimiawi hingga ke bentuk dasarnya untuk dijadikan bahan baku baru."},{l:"C",t:"Teknik pemilahan sampah plastik berdasarkan warna dan jenisnya."},{l:"D",t:"Program pemerintah untuk mendaur ulang limbah kimia industri."}]},
+{no:33, text:"t7", type:"pg", level:"MOTS",
+ q:"Berdasarkan teks, hubungan logis antara paragraf 2 dan paragraf 3 adalah …",
+ options:[{l:"A",t:"Paragraf 3 memberikan contoh konkret dari keterbatasan yang disebutkan paragraf 2."},{l:"B",t:"Paragraf 3 menawarkan alternatif baru yang merespons keterbatasan daur ulang konvensional dalam paragraf 2."},{l:"C",t:"Paragraf 2 dan 3 sama-sama menolak seluruh program daur ulang."},{l:"D",t:"Paragraf 3 membantah fakta statistik yang disebutkan di paragraf 2."}]},
+{no:34, text:"t7", type:"jamak", level:"HOTS",
+ q:"Teks ini relevan dengan kondisi kehidupan sehari-hari karena …",
+ options:[{l:"A",t:"Setiap orang menghasilkan sampah plastik dalam kehidupan sehari-hari."},{l:"B",t:"Teknologi chemical recycling sudah tersedia gratis untuk semua masyarakat Indonesia."},{l:"C",t:"Kebijakan pengurangan plastik sekali pakai sudah banyak diterapkan di Indonesia, misalnya larangan kantong plastik di supermarket."},{l:"D",t:"Indonesia tidak memiliki masalah dengan sampah plastik."},{l:"E",t:"Masalah plastik tidak ada hubungannya dengan kebiasaan konsumsi masyarakat."}]},
+{no:35, text:"t7", type:"pg", level:"LOTS",
+ q:'Kata "monomer" dalam konteks teks ("mengurai plastik kembali ke bentuk monomernya") mengacu pada …',
+ options:[{l:"A",t:"Hasil akhir pembakaran plastik berupa abu."},{l:"B",t:"Unit atau molekul dasar penyusun rantai polimer plastik."},{l:"C",t:"Nama mesin yang digunakan untuk mendaur ulang plastik."},{l:"D",t:"Jenis plastik yang paling banyak diproduksi di Indonesia."}]},
+{no:36, text:"t7", type:"pg", level:"LOTS",
+ q:"Berapa persen sampah plastik Indonesia yang berhasil didaur ulang setiap tahunnya berdasarkan teks?",
+ options:[{l:"A",t:"5–7%"},{l:"B",t:"10–12%"},{l:"C",t:"20–25%"},{l:"D",t:"30–35%"}]},
+{no:37, text:"t7", type:"pg", level:"MOTS",
+ q:"Jika Indonesia berhasil menerapkan kebijakan cukai plastik dan larangan kantong plastik secara konsisten, apa yang paling mungkin terjadi dalam jangka panjang?",
+ options:[{l:"A",t:"Industri plastik akan langsung gulung tikar."},{l:"B",t:"Jumlah sampah plastik yang masuk ke laut akan berkurang secara signifikan."},{l:"C",t:"Harga barang di supermarket akan naik ribuan kali lipat."},{l:"D",t:"Masyarakat akan berhenti sepenuhnya menggunakan plastik dalam satu tahun."}]},
+
+// ===== TEKS 8 (38-40) =====
+{no:38, text:"t8", type:"pg", level:"MOTS",
+ q:"Berdasarkan teks ulasan, latar waktu yang tergambar dalam novel Bumi Manusia adalah …",
+ options:[{l:"A",t:"Era kemerdekaan Indonesia tahun 1945."},{l:"B",t:"Masa kolonial Belanda akhir abad ke-19."},{l:"C",t:"Zaman pendudukan Jepang tahun 1942–1945."},{l:"D",t:"Periode reformasi Indonesia tahun 1998."}]},
+{no:39, text:"t8", type:"pg", level:"LOTS",
+ q:"Berdasarkan teks ulasan, manakah yang termasuk kekurangan novel Bumi Manusia?",
+ options:[{l:"A",t:"Karakter tokoh tidak berkembang sepanjang cerita."},{l:"B",t:"Penggambaran latar sejarah kurang akurat dan tidak detail."},{l:"C",t:"Kosakata khas Jawa dan Belanda yang tersebar dapat membingungkan sebagian pembaca."},{l:"D",t:"Bahasa yang digunakan terlalu sederhana dan tidak puitis."}]},
+{no:40, text:"t8", type:"kategori", level:"HOTS",
+ q:"Bacalah pernyataan berikut ini, lalu tentukan apakah pernyataan tersebut SESUAI atau TIDAK SESUAI dengan isi teks ulasan novel Bumi Manusia!",
+ categories:["SESUAI","TIDAK SESUAI"],
+ statements:[
+   "Novel ini relevan untuk dibaca karena membahas tema keadilan sosial yang masih aktual hingga kini.",
+   "Pramoedya menulis dengan bahasa yang membosankan dan tidak menarik.",
+   "Cerita ini cocok untuk pembaca yang menyukai kisah penuh aksi cepat.",
+   "Kisah Minke mencerminkan perjuangan melawan diskriminasi yang masih relevan di era modern."
+ ]}
+];
+
+/* =====================================================
+   KUNCI JAWABAN
+   pg: huruf jawaban benar
+   jamak: array 2 huruf benar
+   kategori standar: array index kategori benar per statement (0/1)
+   kategori bait: object {0:si,1:si,2:si} index statement benar per kolom
+   ===================================================== */
+const answerKey = {
+  1:'C', 2:'B', 3:'B', 4:'C', 5:['B','D'],
+  6:'B', 7:'B', 8:'B', 9:['B','C'], 10:'B',
+  11:'C', 12:'B', 13:[0,0,1,0], 14:'B', 15:'B', 16:'B',
+  17:'B', 18:'B', 19:'B', 20:'B',
+  21:'B', 22:'A', 23:'B', 24:[0,1,0,1],
+  25:'B', 26:'B', 27:'B', 28:'B', 29:{0:0,1:1,2:2}, 30:'A', 31:['B','D'],
+  32:'B', 33:'B', 34:['A','C'], 35:'B', 36:'B', 37:'B',
+  38:'B', 39:'C', 40:[0,1,1,0]
+};
+
+/* =====================================================
+   STATE
+   ===================================================== */
+let studentInfo = {};
+let currentIndex = 0;
+let answers = {}; // q.no -> answer data
+const TOTAL_TIME = 90 * 60; // seconds
+let remainingTime = TOTAL_TIME;
+let timerInterval = null;
+let examFinished = false;
+
+/* =====================================================
+   START SCREEN LOGIC
+   ===================================================== */
+document.getElementById('btn-start').addEventListener('click', () => {
+  const nama = document.getElementById('inp-nama').value.trim();
+  const sekolah = document.getElementById('inp-sekolah').value.trim();
+
+  if(!nama || !sekolah){
+    document.getElementById('err-msg').style.display = 'block';
+    return;
+  }
+  document.getElementById('err-msg').style.display = 'none';
+
+  studentInfo = {nama, sekolah, waktuMulai: new Date().toISOString()};
+  document.getElementById('hdr-name').textContent = `${nama} • ${sekolah}`;
+
+  document.getElementById('start-screen').classList.remove('active');
+  document.getElementById('exam-screen').classList.add('active');
+
+  buildNavGrid();
+  renderQuestion(0);
+  startTimer();
+});
+
+/* =====================================================
+   TIMER
+   ===================================================== */
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    remainingTime--;
+    updateTimerDisplay();
+    if(remainingTime <= 0){
+      clearInterval(timerInterval);
+      finishExam(true);
+    }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(remainingTime / 60);
+  const s = remainingTime % 60;
+  const el = document.getElementById('timer');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('low', remainingTime <= 300);
+}
+
+/* =====================================================
+   NAV GRID
+   ===================================================== */
+function buildNavGrid(){
+  const grid = document.getElementById('nav-grid');
+  grid.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.textContent = q.no;
+    dot.dataset.idx = idx;
+    dot.addEventListener('click', () => renderQuestion(idx));
+    grid.appendChild(dot);
+  });
+}
+function refreshNavGrid(){
+  document.querySelectorAll('.nav-dot').forEach((dot, idx) => {
+    dot.classList.toggle('current', idx === currentIndex);
+    dot.classList.toggle('answered', isAnswered(idx));
+    if(idx === currentIndex) dot.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  });
+  const answeredCount = questions.filter((q,i)=>isAnswered(i)).length;
+  document.getElementById('progress-fill').style.width = (answeredCount/questions.length*100)+'%';
+}
+function isAnswered(idx){
+  const q = questions[idx];
+  const a = answers[q.no];
+  if(!a) return false;
+  if(q.type === 'pg') return !!a.selected;
+  if(q.type === 'jamak') return (a.selected || []).length > 0;
+  if(q.type === 'kategori') return Object.keys(a.selected || {}).length === q.statements.length;
+  return false;
+}
+
+/* =====================================================
+   RENDER QUESTION
+   ===================================================== */
+function renderQuestion(idx){
+  currentIndex = idx;
+  const q = questions[idx];
+  const wrap = document.getElementById('question-wrap');
+  wrap.innerHTML = '';
+
+  // meta tags
+  const meta = document.createElement('div');
+  meta.className = 'q-meta';
+  const typeLabel = {pg:'Pilihan Ganda', jamak:'PG Kompleks - Jamak', kategori:'PG Kompleks - Kategori'}[q.type];
+  meta.innerHTML = `<span class="q-tag no">Soal ${q.no} / ${questions.length}</span>
+                     <span class="q-tag type">${typeLabel}</span>
+                     <span class="q-tag level">${q.level}</span>`;
+  wrap.appendChild(meta);
+
+  // reading text (collapsible-ish, always show but scrollable)
+  const rt = readingTexts[q.text];
+  const rtDiv = document.createElement('div');
+  rtDiv.className = 'reading-text';
+  rtDiv.innerHTML = `<div class="rt-title">${rt.title}</div>${escapeHtml(rt.body)}<div class="rt-source">${rt.source}</div>`;
+  wrap.appendChild(rtDiv);
+
+  // question card
+  const card = document.createElement('div');
+  card.className = 'question-card';
+
+  const qtext = document.createElement('div');
+  qtext.className = 'question-text';
+  qtext.textContent = q.q;
+  card.appendChild(qtext);
+
+  if(q.type === 'pg'){
+    renderPG(card, q);
+  } else if(q.type === 'jamak'){
+    renderJamak(card, q);
+  } else if(q.type === 'kategori'){
+    renderKategori(card, q);
+  }
+
+  wrap.appendChild(card);
+  refreshNavGrid();
+  updateNavButtons();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---- PG (single choice) ---- */
+function renderPG(card, q){
+  if(!answers[q.no]) answers[q.no] = {selected: null};
+  const optWrap = document.createElement('div');
+  optWrap.className = 'options';
+  q.options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    if(answers[q.no].selected === opt.l) div.classList.add('selected');
+    div.innerHTML = `<div class="opt-letter">${opt.l}</div><div>${escapeHtml(opt.t)}</div>`;
+    div.addEventListener('click', () => {
+      answers[q.no].selected = opt.l;
+      renderQuestion(currentIndex);
+    });
+    optWrap.appendChild(div);
+  });
+  card.appendChild(optWrap);
+}
+
+/* ---- JAMAK (multiple choice, pick 2) ---- */
+function renderJamak(card, q){
+  if(!answers[q.no]) answers[q.no] = {selected: []};
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = 'Pilih dua (2) jawaban yang paling tepat';
+  card.appendChild(hint);
+
+  const optWrap = document.createElement('div');
+  optWrap.className = 'options';
+  q.options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option checkbox';
+    if(answers[q.no].selected.includes(opt.l)) div.classList.add('selected');
+    div.innerHTML = `<div class="opt-letter">${opt.l}</div><div>${escapeHtml(opt.t)}</div>`;
+    div.addEventListener('click', () => {
+      const sel = answers[q.no].selected;
+      const i = sel.indexOf(opt.l);
+      if(i > -1){
+        sel.splice(i,1);
+      } else {
+        if(sel.length >= 2) sel.shift(); // remove oldest, keep max 2
+        sel.push(opt.l);
+      }
+      renderQuestion(currentIndex);
+    });
+    optWrap.appendChild(div);
+  });
+  card.appendChild(optWrap);
+}
+
+/* ---- KATEGORI (table) ---- */
+function renderKategori(card, q){
+  if(!answers[q.no]) answers[q.no] = {selected: {}};
+
+  if(q.matchType === 'bait'){
+    // for soal 29: match each bait (column) to one statement
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = 'Pilih satu gambaran yang sesuai untuk setiap bait';
+    card.appendChild(hint);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'cat-table-wrap';
+    let html = `<table class="cat-table"><thead><tr><th>Bait Puisi</th><th>Gambaran yang Sesuai</th></tr></thead><tbody>`;
+    q.cols.forEach((col, ci) => {
+      html += `<tr><td class="stmt"><b>${escapeHtml(col)}</b></td><td>`;
+      q.statements.forEach((st, si) => {
+        const checked = answers[q.no].selected[ci] === si;
+        html += `<div class="option" style="margin-bottom:6px;${checked?'border-color:var(--navy);background:#eef1f7;':''}" data-ci="${ci}" data-si="${si}">
+                   <div class="opt-letter" style="border-radius:50%;">${checked?'&#10003;':''}</div>
+                   <div style="font-size:13px;">${escapeHtml(st)}</div>
+                 </div>`;
+      });
+      html += `</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.option').forEach(el => {
+      el.addEventListener('click', () => {
+        const ci = el.dataset.ci, si = el.dataset.si;
+        answers[q.no].selected[ci] = parseInt(si);
+        renderQuestion(currentIndex);
+      });
+    });
+    card.appendChild(wrap);
+    return;
+  }
+
+  // standard 2-category table (BENAR/SALAH, FAKTA/PENDAPAT, SESUAI/TIDAK SESUAI)
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = `Pilih ${q.categories[0]} atau ${q.categories[1]} untuk setiap pernyataan`;
+  card.appendChild(hint);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'cat-table-wrap';
+  let html = `<table class="cat-table"><thead><tr><th>Pernyataan</th><th>${q.categories[0]}</th><th>${q.categories[1]}</th></tr></thead><tbody>`;
+  q.statements.forEach((st, si) => {
+    const sel = answers[q.no].selected[si];
+    html += `<tr><td class="stmt">${escapeHtml(st)}</td>
+      <td class="radio-cell"><div class="cat-radio ${sel===0?'checked':''}" data-si="${si}" data-cat="0"></div></td>
+      <td class="radio-cell"><div class="cat-radio ${sel===1?'checked':''}" data-si="${si}" data-cat="1"></div></td>
+      </tr>`;
+  });
+  html += `</tbody></table>`;
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.cat-radio').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = el.dataset.si, cat = parseInt(el.dataset.cat);
+      answers[q.no].selected[si] = cat;
+      renderQuestion(currentIndex);
+    });
+  });
+  card.appendChild(wrap);
+}
+
+/* =====================================================
+   NAV BUTTONS
+   ===================================================== */
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if(currentIndex > 0) renderQuestion(currentIndex - 1);
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  if(currentIndex < questions.length - 1) renderQuestion(currentIndex + 1);
+});
+document.getElementById('btn-finish').addEventListener('click', () => {
+  showFinishModal();
+});
+
+function updateNavButtons(){
+  document.getElementById('btn-prev').disabled = (currentIndex === 0);
+  const isLast = currentIndex === questions.length - 1;
+  document.getElementById('btn-next').style.display = isLast ? 'none' : 'block';
+  document.getElementById('btn-finish').style.display = isLast ? 'block' : 'none';
+}
+
+/* =====================================================
+   FINISH MODAL
+   ===================================================== */
+function showFinishModal(){
+  const answeredCount = questions.filter((q,i)=>isAnswered(i)).length;
+  const unanswered = questions.length - answeredCount;
+  const modalText = document.getElementById('modal-text');
+  if(unanswered > 0){
+    modalText.textContent = `Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin menyelesaikan ujian sekarang? Jawaban tidak dapat diubah setelah ini.`;
+  } else {
+    modalText.textContent = `Semua soal telah dijawab. Jawaban tidak dapat diubah setelah ini. Lanjutkan?`;
+  }
+  document.getElementById('modal-finish').classList.add('show');
+}
+document.getElementById('modal-cancel').addEventListener('click', () => {
+  document.getElementById('modal-finish').classList.remove('show');
+});
+document.getElementById('modal-confirm').addEventListener('click', () => {
+  document.getElementById('modal-finish').classList.remove('show');
+  finishExam(false);
+});
+
+/* =====================================================
+   FINISH EXAM & SUBMIT TO GOOGLE SHEET
+   ===================================================== */
+function finishExam(timeUp){
+  if(examFinished) return;
+  examFinished = true;
+  clearInterval(timerInterval);
+
+  document.getElementById('exam-screen').classList.remove('active');
+  document.getElementById('result-screen').classList.add('active');
+
+  const {correct, total, score} = computeScore();
+
+  const scoreDiv = document.getElementById('result-score');
+  scoreDiv.innerHTML = `
+    <div class="score-circle">${score}</div>
+    <div class="score-label">Skor Akhir</div>
+    <div class="score-detail">${correct} dari ${total} soal terjawab benar</div>
+  `;
+
+  const infoDiv = document.getElementById('result-info');
+  infoDiv.innerHTML = `
+    <div><b>Nama:</b> ${escapeHtml(studentInfo.nama)}</div>
+    <div><b>Sekolah:</b> ${escapeHtml(studentInfo.sekolah)}</div>
+    <div><b>Waktu Selesai:</b> ${timeUp ? 'Habis (otomatis)' : 'Sebelum waktu habis'}</div>
+  `;
+
+  submitToSheet();
+}
+
+function computeScore(){
+  let correct = 0;
+  questions.forEach(q => {
+    const a = answers[q.no] || {};
+    const key = answerKey[q.no];
+    let isCorrect = false;
+    if(q.type === 'pg'){
+      isCorrect = a.selected === key;
+    } else if(q.type === 'jamak'){
+      const sel = (a.selected || []).slice().sort();
+      const k = key.slice().sort();
+      isCorrect = sel.length === k.length && sel.every((v,i)=>v===k[i]);
+    } else if(q.type === 'kategori'){
+      if(q.matchType === 'bait'){
+        const sel = a.selected || {};
+        isCorrect = Object.keys(key).every(ci => sel[ci] === key[ci]);
+      } else {
+        const sel = a.selected || {};
+        isCorrect = q.statements.every((st,si) => sel[si] === key[si]);
+      }
+    }
+    if(isCorrect) correct++;
+  });
+  const total = questions.length;
+  const score = Math.round((correct/total)*100);
+  return {correct, total, score};
+}
+
+function buildPayload(){
+  const {correct, total, score} = computeScore();
+  const payload = {
+    timestamp: new Date().toISOString(),
+    nama: studentInfo.nama,
+    sekolah: studentInfo.sekolah,
+    waktu_mulai: studentInfo.waktuMulai,
+    sisa_waktu_detik: remainingTime,
+    jawaban_benar: correct,
+    jumlah_soal: total,
+    skor: score
+  };
+
+  questions.forEach(q => {
+    const a = answers[q.no] || {};
+    let val = '';
+    if(q.type === 'pg'){
+      val = a.selected || '';
+    } else if(q.type === 'jamak'){
+      val = (a.selected || []).slice().sort().join(',');
+    } else if(q.type === 'kategori'){
+      if(q.matchType === 'bait'){
+        const parts = [];
+        for(let ci=0; ci<q.cols.length; ci++){
+          const si = a.selected ? a.selected[ci] : undefined;
+          parts.push(`Bait${ci+1}=${si!==undefined? (si+1) : '-'}`);
+        }
+        val = parts.join('; ');
+      } else {
+        const parts = [];
+        for(let si=0; si<q.statements.length; si++){
+          const cat = a.selected ? a.selected[si] : undefined;
+          parts.push(`${si+1}:${cat!==undefined ? q.categories[cat] : '-'}`);
+        }
+        val = parts.join('; ');
+      }
+    }
+    payload['soal_'+q.no] = val;
+  });
+
+  return payload;
+}
+
+function submitToSheet(){
+  const spinner = document.getElementById('result-spinner');
+  const status = document.getElementById('result-status');
+
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf('GANTI_DENGAN') > -1){
+    spinner.style.display = 'none';
+    status.className = 'status-msg fail';
+    status.textContent = 'URL Google Apps Script belum diatur. Hubungi admin/guru.';
+    return;
+  }
+
+  const payload = buildPayload();
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', // Apps Script web app + no-cors: response unreadable but request goes through
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    spinner.style.display = 'none';
+    status.className = 'status-msg ok';
+    status.textContent = 'Jawaban berhasil dikirim. Terima kasih!';
+  })
+  .catch(() => {
+    spinner.style.display = 'none';
+    status.className = 'status-msg fail';
+    status.textContent = 'Gagal mengirim jawaban. Periksa koneksi internet dan hubungi guru.';
+  });
+}
+
+/* prevent accidental navigation away */
+window.addEventListener('beforeunload', function(e){
+  if(!examFinished && document.getElementById('exam-screen').classList.contains('active')){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+</script>
+</body>
+</html>
